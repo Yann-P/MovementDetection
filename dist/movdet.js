@@ -1,0 +1,1 @@
+console.error("\n/home/lm/www/movdet/src/settings.js:1\nexport class Settings {\n^\nParseError: 'import' and 'export' may appear only with 'sourceType: module'");
