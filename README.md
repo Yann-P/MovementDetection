@@ -1,5 +1,7 @@
 # Movdet (Movement Detection)
 
+![Screen](screen.jpg)
+
 ## Author
 Yann Pellegrini
 
@@ -17,9 +19,10 @@ Techs: JS ES6, d3, javascript-state-machine, browserify
 
 ```
 browserify src/main.js -o dist/movdet.js
-or watchify -d src/main.js -o dist/movdet.js -v
+# or,
+watchify -d src/main.js -o dist/movdet.js -v
 ```
 
 # Demo
 
-[https://yann-p.fr/movdet](yann-p.fr/movedet)
+[https://yann-p.fr/movdet](https://yann-p.fr/movdet)
