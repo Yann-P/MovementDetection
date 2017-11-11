@@ -5,34 +5,34 @@ const DagreD3 = require('dagre-d3');
 module.exports = class StateMachineRenderer {
 
     constructor(stateMachine, renderTo) {
-        this.stateMachine = stateMachine;
-        this.renderTo = renderTo;
-        this.graph = this._makeGraph();
+        this._stateMachine = stateMachine;
+        this._renderTo = renderTo;
+        this._graph = this._makeGraph();
         this.draw();
     }
 
     _makeGraph() {
         return GraphlibDot.read(
-            visualize(this.stateMachine)
+            visualize(this._stateMachine)
         );
     }
 
 
     setHighlightedNode(node) {
-        this.graph = this._makeGraph();
-        this.graph.setNode(node, { style: "fill:yellow" });
+        this._graph = this._makeGraph();
+        this._graph.setNode(node, { style: "fill:yellow" });
         this.draw();
     }
 
     draw() {
-        this.renderTo.selectAll("*").remove();
+        this._renderTo.selectAll("*").remove();
     
 
         // Render the graphlib object using d3.
         const render = new DagreD3.render();
 
 
-        this.renderTo.call(render, this.graph);
+        this._renderTo.call(render, this._graph);
     }
 
 

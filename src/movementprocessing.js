@@ -29,7 +29,11 @@ module.exports = class MovementProcessing {
                     this._sendEvent('up');
                 }
             }
+
+            this._resetCounter = 0;
+            
         } else {
+
             if(++this._resetCounter > this._settings.get('timeout')) {
                 this._sendEvent('reset');
                 this._resetCounter = 0;

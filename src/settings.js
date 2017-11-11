@@ -12,11 +12,11 @@ function setEditingDone(el) {
 module.exports = class Settings {
     constructor(settings, formElement) {
 
-        this.settings = Object.seal(settings);
+        this._settings = Object.seal(settings);
         this._emitter = new EventEmitter;
 
-        for(const key in this.settings) {
-            setTimeout(() => this._emitter.emit('change', key, this.settings[key]), 0); // don't unleash the zalgo
+        for(const key in this._settings) {
+            setTimeout(() => this._emitter.emit('change', key, this._settings[key]), 0); // don't unleash the zalgo
         }
 
         for(const el of formElement.children) {
@@ -24,12 +24,12 @@ module.exports = class Settings {
             if(el.tagName.toLowerCase() !== "input" || el.type !== "number") 
                 continue;
                 
-            el.value = this.settings[el.name];
+            el.value = this._settings[el.name];
             el.addEventListener('keyup', setEditing.bind(this, el));
             el.addEventListener('change', () =>  {
                 setEditingDone(el)
                 const value = parseFloat(el.value);
-                this.settings[el.name] = value;
+                this._settings[el.name] = value;
                 this._emitter.emit('change', el.name, value)
             });
 
@@ -38,7 +38,7 @@ module.exports = class Settings {
 
 
     getAll() {
-        return this.settings;
+        return this._settings;
     }
 
     get emitter() {
@@ -46,6 +46,6 @@ module.exports = class Settings {
     }
     
     get(key) {
-        return this.settings[key];
+        return this._settings[key];
     }
 }
