@@ -1,3 +1,5 @@
+const EventEmitter = require('event-emitter');
+
 module.exports = class Capture {
     constructor(canvas, fps=60) {
         this.x = 0;
@@ -5,11 +7,20 @@ module.exports = class Capture {
         this.updateInterval = null;
         this.fps = fps;
         this.ctx = canvas.getContext('2d');
+        this._emitter = new EventEmitter;
+
         
         canvas.addEventListener('mousemove', Capture.prototype.mouseMove.bind(this, canvas));
     }
 
+
+    get emitter() {
+        return this._emitter;
+    }
+
     set fps(val) {
+        console.log('setfps', val)
+        this.updateInterval !== null && clearInterval(this.updateInterval)
         this.updateInterval = setInterval(Capture.prototype.update.bind(this), 1000/val);
     }
 
@@ -19,7 +30,7 @@ module.exports = class Capture {
     }
 
     update() {
-        console.log('update')
+        this._emitter.emit('frame', {x: this.x, y: this.y});
         this.ctx.fillStyle='rgba(0, 0, 0, 0.05)';
         this.ctx.fillRect(0, 0, 600, 600);
         this.ctx.fillStyle='red';

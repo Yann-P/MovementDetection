@@ -11,15 +11,26 @@
         
 
         <canvas id="capture" width="600" height="600"></canvas>
-        <svg id="graph"><g></g></svg>
+        <div id="graph-container">
+            <h1>Finite State Machine</h1>
+            <svg id="graph"><g></g></svg>
+        </div>
+        
         <form id="parameters">
-            <label for="fps">Capture FPS (Hz) </label><input type="number" name="fps" value="30"><br>
-            <label for="fps">Move threshold (px) </label><input type="number" name="threshold" value="1"><br>
-            <label for="fps">Idle timeout (ms) </label><input type="number" name="timeout" value="1"><br>
-            <input type="submit" value="Update">
+            <h1>Settings</h1>
+            <label for="fps">Capture FPS (Hz) </label><input type="number" name="fps"><br>
+            <label for="fps">Move threshold (px) </label><input type="number" name="threshold"><br>
+            <label for="fps">Idle frame count (frames) </label><input type="number" name="timeout"><br>
+            <input type="button" value="Apply"> <input type="button" name="save" value="Apply + Save">
         </form>
-
-
+        <div id="client">
+            <h1>Info exposed to the client.</h1>
+            <h2>Idle or moving?</h2>
+            <div id="state"></div>
+            <h2>Events</h2>
+            <div id="events"></div>
+        </div>
+        <div id="info"></div>
 
         <script src="dist/movdet.js"></script>
     </body>
