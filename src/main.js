@@ -23,10 +23,10 @@ const positionFsm = new StateMachine({
 	init: "CENTER",
       	transitions: [
 	
-       	 	{ name: 'up',     from: 'CENTER',  to: 'UP' },
-       	 	{ name: 'up',     from: 'DOWN',  to: 'CENTER' },
-        	{ name: 'down',   from: 'CENTER', to: 'DOWN'  },
-        	{ name: 'down',   from: 'UP', to: 'CENTER'  },
+        { name: 'up',     from: 'CENTER',  to: 'UP' },
+        { name: 'up',     from: 'DOWN',  to: 'CENTER' },
+        { name: 'down',   from: 'CENTER', to: 'DOWN'  },
+        { name: 'down',   from: 'UP', to: 'CENTER'  },
 		{ name: 'right', from: 'CENTER',    to: 'RIGHT' },
 		{ name: 'right', from: 'LEFT',    to: 'CENTER' },
 		{ name: 'left', from: 'CENTER', to: 'LEFT'    },
@@ -73,6 +73,18 @@ document.addEventListener('DOMContentLoaded', () => {
             movementRenderer.setHighlightedNode(movementFsm.state);
         }
     });
+
+    movementFsm.observe({
+        onTransition({transition, from, to}) {
+            if(transition != 'reset') {
+                if(positionFsm.can(transition)) {
+                    positionFsm[transition]();
+                }
+
+            }
+            positionRenderer.setHighlightedNode(positionFsm.state);
+        }
+    })
 
     /*fsm.observe({
         onTransition({transition, from, to}) {
