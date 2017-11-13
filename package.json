@@ -1,5 +1,5 @@
 {
-	"name": "state machine to detect movements",
+	"name": "state_machine_to_detect_movements",
 	"dependencies": {
 		"d3": "^4.11.0",
 		"d3-browserify": "^3.4.12",
