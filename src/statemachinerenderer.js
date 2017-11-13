@@ -25,6 +25,7 @@ module.exports = class StateMachineRenderer {
     }
 
     draw() {
+	console.log("renderer!", this._renderTo);
         this._renderTo.selectAll("*").remove();
     
 

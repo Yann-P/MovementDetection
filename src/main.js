@@ -8,7 +8,7 @@ const StateMachineRenderer = require('./statemachinerenderer');
 const Settings = require('./settings');
 const MovementProcessing = require('./movementprocessing')
 
-const  fsm = new StateMachine({
+const movementFsm = new StateMachine({
     init: 'STILL',
     transitions: [
         { name: 'up',     from: 'STILL',  to: 'UP' },
@@ -17,6 +17,21 @@ const  fsm = new StateMachine({
         { name: 'right', from: 'STILL',    to: 'RIGHT' },
         { name: 'reset', from: ['UP', 'DOWN', 'LEFT', 'RIGHT'], to: "STILL"}
     ]
+});
+
+const positionFsm = new StateMachine({
+	init: "CENTER",
+      	transitions: [
+	
+       	 	{ name: 'up',     from: 'CENTER',  to: 'UP' },
+       	 	{ name: 'up',     from: 'DOWN',  to: 'CENTER' },
+        	{ name: 'down',   from: 'CENTER', to: 'DOWN'  },
+        	{ name: 'down',   from: 'UP', to: 'CENTER'  },
+		{ name: 'right', from: 'CENTER',    to: 'RIGHT' },
+		{ name: 'right', from: 'LEFT',    to: 'CENTER' },
+		{ name: 'left', from: 'CENTER', to: 'LEFT'    },
+		{ name: 'left', from: 'RIGHT', to: 'CENTER'    }
+	]
 });
 
 const CURRENT_VERSION = 0.1;
@@ -36,9 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const clientState = document.querySelector('#client #state')
     
     const capture = new Capture(captureCanvas);
-    const renderer = new StateMachineRenderer(fsm, d3.select("#graph g"));
+    const positionRenderer = new StateMachineRenderer(positionFsm, d3.select("#graph-position g"));
+    const movementRenderer = new StateMachineRenderer(movementFsm, d3.select("#graph-movement g"));
     const settings = new Settings(restoreSettings(), document.querySelector('#parameters'));
-    const processing = new MovementProcessing(fsm, capture, settings);
+    const processing = new MovementProcessing(movementFsm, capture, settings);
 
     settings.emitter.on('change', (key, val) => {
         if(key == 'fps')
@@ -46,19 +62,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     processing.emitter.on('event', (what) => {
-        const oldState = fsm.state;
+        const oldState = movementFsm.state;
 
         for(const event of ['reset', 'right', 'left', 'up', 'down']) {
-            if(what === event && fsm.can(event))
-                fsm[event]();
+            if(what === event && movementFsm.can(event))
+                movementFsm[event]();
         }
     
-        if(oldState !== fsm.state) {
-            renderer.setHighlightedNode(fsm.state);
+        if(oldState !== movementFsm.state) {
+            movementRenderer.setHighlightedNode(movementFsm.state);
         }
     });
 
-    fsm.observe({
+    /*fsm.observe({
         onTransition({transition, from, to}) {
             if(transition === 'reset') {
                 clientState.innerHTML = 'idle'
@@ -68,10 +84,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
         }
-    })
+    })*/
 
     document.querySelector('form#parameters input[name=save]').addEventListener('click', () => saveSettings(settings.getAll()))
-     
+    
 });
 
 
