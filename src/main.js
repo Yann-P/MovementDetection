@@ -76,9 +76,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     movementFsm.observe({
         onTransition({transition, from, to}) {
-            if(transition != 'reset') {
-                if(positionFsm.can(transition)) {
-                    positionFsm[transition]();
+            if(transition == 'reset') {
+                const newState = from.toLowerCase()
+                if(positionFsm.can(newState)) {
+                    positionFsm[newState]();
                 }
 
             }
