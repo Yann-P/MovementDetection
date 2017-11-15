@@ -86,17 +86,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })
 
-    /*fsm.observe({
+    positionFsm.observe({
         onTransition({transition, from, to}) {
-            if(transition === 'reset') {
-                clientState.innerHTML = 'idle'
-            } else {
-                clientEvents.innerText =  Date() + " : " + transition + "\n" + clientEvents.innerText
-                clientState.innerHTML = 'moving'
-            }
+            const d = new Date()
+            clientEvents.innerText =  d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + " : " + to + "\n" + clientEvents.innerText
+
 
         }
-    })*/
+    })
 
     document.querySelector('form#parameters input[name=save]').addEventListener('click', () => saveSettings(settings.getAll()))
     
