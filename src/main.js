@@ -7,6 +7,8 @@ const Capture = require('./capture');
 const StateMachineRenderer = require('./statemachinerenderer');
 const Settings = require('./settings');
 const MovementProcessing = require('./movementprocessing')
+const Player = require("./player");
+
 
 const movementFsm = new StateMachine({
     init: 'STILL',
@@ -56,6 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const settings = new Settings(restoreSettings(), document.querySelector('#parameters'));
     const processing = new MovementProcessing(movementFsm, capture, settings);
 
+    const player = new Player(document.querySelector('#player'));
+
+
     settings.emitter.on('change', (key, val) => {
         if(key == 'fps')
             capture.fps = val;
@@ -78,6 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
         onTransition({transition, from, to}) {
             if(transition == 'reset') {
                 const newState = from.toLowerCase()
+                player.setDirection(newState);
                 if(positionFsm.can(newState)) {
                     positionFsm[newState]();
                 }
@@ -91,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
         onTransition({transition, from, to}) {
             const d = new Date()
             clientEvents.innerText =  d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + " : " + to + "\n" + clientEvents.innerText
-
+            //player.setDirection(to.toLowerCase());
 
         }
     })
