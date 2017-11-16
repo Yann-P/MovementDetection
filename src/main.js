@@ -8,7 +8,7 @@ const StateMachineRenderer = require('./statemachinerenderer');
 const Settings = require('./settings');
 const MovementProcessing = require('./movementprocessing')
 const Player = require("./player");
-
+const ParticleEmitter = require('./particleemitter');
 
 const movementFsm = new StateMachine({
     init: 'STILL',
@@ -59,7 +59,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const processing = new MovementProcessing(movementFsm, capture, settings);
 
     const player = new Player(document.querySelector('#player'));
+    const particleEmitter = new ParticleEmitter(document.querySelector('#particles'));
 
+    capture.emitter.on('frame', ({x,y}) => particleEmitter.emitParticle((x)*2-100, y*2-100))
 
     settings.emitter.on('change', (key, val) => {
         if(key == 'fps')

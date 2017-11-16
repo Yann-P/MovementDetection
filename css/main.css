@@ -24,6 +24,15 @@ canvas {
   background: black;
 }
 
+#particles {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border: 1px solid red;
+  width: 600px;
+  height: 600px;
+}
+
 #graph-container {
   position: absolute;
   width: 400px;
