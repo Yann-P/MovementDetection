@@ -2,12 +2,13 @@ const EventEmitter = require('event-emitter');
 
 module.exports = class MovementProcessing {
 
-    constructor(stateMachine, capture, settings) {
+    constructor( capture, settings) {
         this._settings = settings;
         capture.emitter.on('frame', MovementProcessing.prototype.onFrame.bind(this));
         this._lastCoords = Object.seal({x: 0, y: 0});
         this._resetCounter = 0;
         this._emitter = new EventEmitter;
+        this._clickLock = false;
     }
 
     onFrame({x, y}) {
@@ -15,27 +16,16 @@ module.exports = class MovementProcessing {
         const diffY = y - this._lastCoords.y;
         const distance = Math.sqrt(Math.pow(diffX, 2) + Math.pow(diffY, 2))
 
-        if(distance > this._settings.get('threshold')) {
-            if(Math.abs(diffX) > Math.abs(diffY)) {
-                if(diffX > 0) {
-                    this._sendEvent('right');
-                } else {
-                    this._sendEvent('left');
-                }
-            } else {
-                if(diffY > 0) {
-                    this._sendEvent('down');
-                } else {
-                    this._sendEvent('up');
-                }
-            }
-
+        if(distance > this._settings.get('click_threshold')) {
             this._resetCounter = 0;
+            this._clickLock = false;
             
         } else {
 
-            if(++this._resetCounter > this._settings.get('timeout')) {
-                this._sendEvent('reset');
+            if(++this._resetCounter > this._settings.get('click_timeout')) {
+                if(!this._clickLock) 
+                    this._sendEvent('click');
+                this._clickLock = true;
                 this._resetCounter = 0;
             }
             

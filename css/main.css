@@ -8,12 +8,21 @@ canvas {
 	transform: scale(-1, 1);
 }
 
-#player {
-  width: 20px;
-  height: 20px;
+
+#player, #mosquito {
+  width: 100px;
+  height: 100px;
   position: absolute;
-  background: red;
+  background-size: 100px 100px;
   z-index: 99;
+}
+#player {
+  background-image: url("gnome.png");
+  
+}
+
+#mosquito {
+  background-image: url('mosquito.png');
 }
 
 #capture {
@@ -24,34 +33,14 @@ canvas {
   background: black;
 }
 
-#particles {
-  position: absolute;
-  left: 0;
-  right: 0;
-  border: 1px solid red;
-  width: 600px;
-  height: 600px;
-}
 
-#graph-container {
-  position: absolute;
-  width: 400px;
-  height: 400px;
-  left: 600px;
-  top: 0;
-}
-
-#graph-movement, #graph-position {
-  width: 400px;
-  height: 200px;
-}
 
 #parameters {
   position: absolute;
   width:400px;
   height: 200px;
   left: 600px;
-  top: 400px;
+  top: 000px;
   padding: 20px;
 }
 

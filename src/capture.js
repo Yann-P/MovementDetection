@@ -34,54 +34,39 @@ module.exports = class Capture {
         function captureStream() {
             navigator.mediaDevices.getUserMedia({audio: false, video: true})
                 .then(function(stream) {
-    
-                    //str = stream;
-    
+
     
                     vid.src = window.URL.createObjectURL(stream);
                     vid.onclick = function() { vid.play(); };
                     vid.play();
     
-                    setTimeout(run, 3000);
+                    setTimeout(run, 2000);
                 
                 
                 }).catch(function(err) {
                     console.log(err);
                 });
-
-
-    
-                
         }
 
         function run() {
-            //console.log("w="+vid.videoWidth+"h="+vid.videoHeight);
             var ar = new ARController(vid.videoWidth, vid.videoHeight, 'camera_para.dat');
-            //arController.setPatternDetectionMode(artoolkit.AR_MATRIX_CODE_DETECTION);
             
             ar.onload = function() {
                 ar.setPatternDetectionMode( artoolkit.AR_MATRIX_CODE_DETECTION );
                 var markerId;
             
-                // Load pattern marker.
-                //
                 ar.addEventListener('getMarker', function(ev) {
                     if(ev.data.marker.idMatrix !== 8) return;
-                    //if (ev.data.marker.idPatt === markerId) {
                     var mk = ev.data.marker;
                     self._x = mk.pos[0];
                     self._y = mk.pos[1];
-                        
-                        //console.log('saw marker', ev.data.marker);
-                        //console.log('transformation matrix', ar.getTransformationMatrix());
-                    //}
+
                 });
             
             
-                setInterval(function() {
-                    ar.process(vid);
-                }, 33);
             };
+            self._ar = ar;
+            self._vid = vid;
         }
     
     }
@@ -99,9 +84,14 @@ module.exports = class Capture {
 
 
     update() {
-        console.log({x: this._x, y: this._y})
-        this._emitter.emit('frame', {x: this._x, y: this._y});
+        if(!this._ar) return;
+        try {
+            this._ar.process(this._vid);
+            this._emitter.emit('frame', {x: this._x, y: this._y, videoHeight: this._ar.videoHeight, videoWidth: this._ar.videoWidth});
+    
+        } catch(e) {
+            console.warn(e)
+        }
     }
-
 
 }

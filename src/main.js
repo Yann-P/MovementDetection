@@ -1,47 +1,18 @@
-const StateMachine = require('javascript-state-machine');
-window.d3 = require('d3-browserify');
-
-
 
 const Capture = require('./capture');
-const StateMachineRenderer = require('./statemachinerenderer');
 const Settings = require('./settings');
 const MovementProcessing = require('./movementprocessing')
 const Player = require("./player");
-const ParticleEmitter = require('./particleemitter');
+const Mosquito = require("./mosquito");
 
-const movementFsm = new StateMachine({
-    init: 'STILL',
-    transitions: [
-        { name: 'up',     from: 'STILL',  to: 'UP' },
-        { name: 'down',   from: 'STILL', to: 'DOWN'  },
-        { name: 'left', from: 'STILL', to: 'LEFT'    },
-        { name: 'right', from: 'STILL',    to: 'RIGHT' },
-        { name: 'reset', from: ['UP', 'DOWN', 'LEFT', 'RIGHT'], to: "STILL"}
-    ]
-});
-
-const positionFsm = new StateMachine({
-	init: "CENTER",
-      	transitions: [
-	
-        { name: 'up',     from: 'CENTER',  to: 'UP' },
-        { name: 'up',     from: 'DOWN',  to: 'CENTER' },
-        { name: 'down',   from: 'CENTER', to: 'DOWN'  },
-        { name: 'down',   from: 'UP', to: 'CENTER'  },
-		{ name: 'right', from: 'CENTER',    to: 'RIGHT' },
-		{ name: 'right', from: 'LEFT',    to: 'CENTER' },
-		{ name: 'left', from: 'CENTER', to: 'LEFT'    },
-		{ name: 'left', from: 'RIGHT', to: 'CENTER'    }
-	]
-});
 
 const CURRENT_VERSION = 0.1;
+const APP_NAME = "movdet-pointer"
 
 const DEFAULT_SETTINGS = {
-    fps: 10, 
-    threshold: 10, 
-    timeout: 10
+    fps: 30, 
+    click_timeout: 20, 
+    click_threshold: 10
 };
 
 
@@ -50,59 +21,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const captureCanvas = document.querySelector('canvas#capture');
     const clientEvents = document.querySelector('#client #events')
-    const clientState = document.querySelector('#client #state')
     
     const capture = new Capture(captureCanvas);
-    const positionRenderer = new StateMachineRenderer(positionFsm, d3.select("#graph-position g"));
-    const movementRenderer = new StateMachineRenderer(movementFsm, d3.select("#graph-movement g"));
     const settings = new Settings(restoreSettings(), document.querySelector('#parameters'));
-    const processing = new MovementProcessing(movementFsm, capture, settings);
+    const processing = new MovementProcessing(capture, settings);
 
     const player = new Player(document.querySelector('#player'));
-    const particleEmitter = new ParticleEmitter(document.querySelector('#particles'));
+    const mosquito = new Mosquito(document.querySelector('#mosquito'));
 
-    capture.emitter.on('frame', ({x,y}) => particleEmitter.emitParticle((x)*2-100, y*2-100))
+    capture.emitter.on('frame', ({x, y, videoHeight, videoWidth}) => {
+        let xx = videoWidth - x;
+        let yy = y;
+        xx *= (600/videoWidth);
+        yy *= (600/videoHeight);
+        player.setPosition(xx, yy);
+    });
 
     settings.emitter.on('change', (key, val) => {
         if(key == 'fps')
             capture.fps = val;
     });
 
-    processing.emitter.on('event', (what) => {
-        const oldState = movementFsm.state;
-
-        for(const event of ['reset', 'right', 'left', 'up', 'down']) {
-            if(what === event && movementFsm.can(event))
-                movementFsm[event]();
-        }
-    
-        if(oldState !== movementFsm.state) {
-            movementRenderer.setHighlightedNode(movementFsm.state);
-        }
-    });
-
-    movementFsm.observe({
-        onTransition({transition, from, to}) {
-            if(transition == 'reset') {
-                const newState = from.toLowerCase()
-                player.setDirection(newState);
-                if(positionFsm.can(newState)) {
-                    positionFsm[newState]();
-                }
-
-            }
-            positionRenderer.setHighlightedNode(positionFsm.state);
-        }
+    processing.emitter.on('event', what => {
+        if(what === 'click')
+            clientEvents.innerHTML = Date.now() + "  CLICKED!<br>" + clientEvents.innerHTML;
     })
 
-    positionFsm.observe({
-        onTransition({transition, from, to}) {
-            const d = new Date()
-            clientEvents.innerText =  d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + " : " + to + "\n" + clientEvents.innerText
-            //player.setDirection(to.toLowerCase());
-
+    setInterval(function() {
+        if(Math.abs(player.x - mosquito.x) + Math.abs(player.y - mosquito.y) < 50) {
+            mosquito.die();
         }
-    })
+    }, 200);
 
     document.querySelector('form#parameters input[name=save]').addEventListener('click', () => saveSettings(settings.getAll()))
     
@@ -111,8 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function restoreSettings() {
     try {
-        const res = JSON.parse(localStorage.getItem('movdet-settings'));
-        const v = +localStorage.getItem('movdet-version');
+        const res = JSON.parse(localStorage.getItem(APP_NAME + '-settings'));
+        const v = +localStorage.getItem(APP_NAME + '-version');
         if(CURRENT_VERSION == v && res != null)
             return res;
         return DEFAULT_SETTINGS;

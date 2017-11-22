@@ -9,28 +9,21 @@
     <body>
 
         
-        <div id="player"></div>
+        <div id="player"></div>        <div id="mosquito"></div>
+        
         <video id="capture" width="600" height="600" autoplay></video>
-        <div id="particles"></div>
         
         <canvas style="position:absolute;top: 600px; " width="600" height="400"></canvas>
-        <div id="graph-container">
-            <h1>Finite State Machine</h1>
-            <svg id="graph-movement"><g></g></svg>
-            <svg id="graph-position"><g></g></svg>
-        </div>
-        
+
         <form id="parameters">
             <h1>Settings</h1>
             <label for="fps">Capture FPS (Hz) </label><input type="number" name="fps"><br>
-            <label for="fps">Move threshold (px) </label><input type="number" name="threshold"><br>
-            <label for="fps">Idle frame count (frames) </label><input type="number" name="timeout"><br>
+            <label for="fps">Click frame count (frames) </label><input type="number" name="click_timeout"><br>
+            <label for="fps">Click move threshold (px) </label><input type="number" name="click_threshold"><br>
             <input type="button" value="Apply"> <input type="button" name="save" value="Apply + Save">
         </form>
         <div id="client">
             <h1>Info exposed to the client.</h1>
-            <h2>Idle or moving?</h2>
-            <div id="state"></div>
             <h2>Events</h2>
             <div id="events"></div>
         </div>

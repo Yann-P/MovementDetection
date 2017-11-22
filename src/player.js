@@ -4,7 +4,7 @@ module.exports = class Player {
         this._direction = {x:0, y:0}
         this._x = ~~(window.innerWidth / 2);
         this._y = ~~(window.innerHeight / 2);
-        setInterval(Player.prototype.update.bind(this), 100);
+        setInterval(this.update.bind(this), 100);
     }
 
     setDirection(dir) {
@@ -17,11 +17,29 @@ module.exports = class Player {
         }
     }
 
+    get x() {
+        return this._x;
+    }
+
+    get y() {
+        return this._y;
+    }
+
+    setPosition(x, y) {
+        this._x = x;
+        this._y = y;
+        this._updateDiv();
+    }
+
+    _updateDiv() {
+        this._div.style.top = ~~(this._y -50)  + 'px';
+        this._div.style.left = ~~(this._x -50) + 'px';
+    }
+
     update() {
         this._x += this._direction.x * 5;
         this._y += this._direction.y * 5;
-
-        this._div.style.top = ~~(this._y)  + 'px';
-        this._div.style.left = ~~(this._x) + 'px';
+        this._updateDiv();
+        
     }
 }
